@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+   <head>
+		<title>Tour Map</title>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta http-equiv="content-language" content="en" />
+		<meta name="author" content="Jason Schapiro" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" />
+		<meta name="DC.creator" content="Jason Schapiro" />
+		<meta name="DC.language" content="en" />
+		<link type="text/css" rel="stylesheet" href="css/960/min/960.css" />
+		<link type="text/css" rel="stylesheet" href="css/960/min/960_16_col.css" />
+		<link type="text/css" rel="stylesheet" href="css/normalize/min/normalize.css" />
+		<!--<link type="text/css" rel="stylesheet" href="css/prettify/min/prettify.css" />-->
+		<link type="text/css" rel="stylesheet" href="css/style.css" />
+		<script type="text/javascript" src="js/modernizr-2.0.6/modernizr.min.js"></script>
+    </head>
+    <body>
+    		<header class="dark">
+			<div class="container_16">
+				<h1>Music Popularity and Events - Are They Correlated? - By Jason Schapiro</h1>
+			</div>
+		</header>
+		<div class="container_16">
+			<article class="grid_16">
+				<div class="item rounded dark">
+					<div id="map_canvas" class="map rounded"></div>
+				</div>
+
+			</div>
+		</footer>
+		
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script> 
+		<script type="text/javascript" src="js/jquery-1.7.1/jquery.min.js"></script>
+		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js"></script>
+		<script type="text/javascript" src="js/jquery.ui.map.full.min.js"></script>
+		<script type="text/javascript">
+			// TODO
+			// 1. Make Starting Interface (choose Artist, Year)
+			// 2. Dynamic overlay size/color
+			// 3. (Optional) Clickable overlay showing # listeners
+			// 4. Set Map Fixed at center of US
+		
+			var artist = 'Drake',
+				year = 2011;
+            $(function() { 
+            
+					$('#map_canvas').gmap({'center': '39.027719,-103.623047', 'disableDefaultUI':false, 'callback': function() {
+
+						var self = this;
+						var clientPos1 = new google.maps.LatLng(39.027719,-103.623047);
+						var clientPos2 = new google.maps.LatLng(34.22,-90.623047);
+					//	self.addShape('Circle', { 'strokeWeight': 0, 'fillColor': "#008595", 'fillOpacity': 0.25, 'center': clientPos1, 'radius': 200000, clickable: false });
+					//	self.addShape('Circle', { 'strokeWeight': 0, 'fillColor': "#008595", 'fillOpacity': 0.25, 'center': clientPos2, 'radius': 50000, clickable: false });
+						$.getJSON( 'tour_api?artist='+artist, function(data) { 			
+							console.log(data);
+							// min radius = 50000
+							// max radius = 200000
+							$.each(data.data.totals, function(i, city){
+								var clientPos = new google.maps.LatLng(city.lat,city.long);
+								self.addShape('Circle', { 'strokeWeight': 0, 'fillColor': "#008595", 'fillOpacity': 0.25, 'center': clientPos, 'radius': 50000, clickable: false });
+							});
+							
+						});		
+						$.getJSON( 'http://ws.audioscrobbler.com/2.0/?method=artist.getpastevents&format=json&artist='+artist+'&api_key=46d8e5af527082f81cd3e592d5d832a8&limit=300', function(data) { 
+						console.log(data);
+							$.each( data.events.event, function(i, event) {
+								// find out date
+								var date = event.startDate;
+								date = date.split(' ');
+								console.log(date[3]);
+								// skip until reaches current year
+								if (parseInt(date[3]) > year) return;
+								// after lower year, break loop 								
+								if (parseInt(date[3]) < year) return false;
+								if (event.venue.location.country == "United States" ){
+									var lat = event.venue.location['geo:point']['geo:lat'];
+									var long = event.venue.location['geo:point']['geo:long'];
+									console.log(lat+' : '+long);
+									// hide erroneous geotags (failed :/ )
+								//	if (long < -90 && long > -115 && lat < 50 && lat > 25){
+										self.addMarker({ 'position': new google.maps.LatLng(lat, long), 'bounds':true } ).click(function() {
+											self.openInfoWindow({ 'content': event.url }, this);
+										});
+								//	}
+								}
+							});
+
+						}); 
+					}});  
+			});
+        </script>
+    
+	</body>
+</html>
