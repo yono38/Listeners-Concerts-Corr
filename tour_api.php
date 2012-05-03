@@ -62,7 +62,8 @@
 	// see if artist is in DB
 	$query = "SELECT * FROM artists WHERE artist_name='".$_GET['artist']."'";	
 	$res = mysql_query($query, $link);
-	if (!$res){
+
+	if (mysql_num_rows($res) == 0){
 		set_err('Artist not found: '.$_GET['artist'], $link);
 		return;
 	}	
@@ -74,6 +75,7 @@
 	// deal with date limiting later
 	// get totals
 	$query = "SELECT city_id, SUM(listeners) as total FROM `artist_rank` WHERE artist_id=".$results['data']['artist_id']." and start_date >= ".$limits[$results['year']]['start']." and end_date <= ".$limits[$results['year']]['end']." group by city_id";
+
 	$res = mysql_query($query, $link);
 	while($row = mysql_fetch_array($res)){
 		// get geocoordinates of city
@@ -97,6 +99,11 @@
 	// "SELECT MIN( start_date ) as first_start, MIN(end_date) as first_end, MAX(start_date) as last_start, MAX( end_date ) as last_end FROM  `weeklychartrange` WHERE city_id ="
 	
 	$results['data']['total_cities'] = count($results['data']['totals']);
+	// no listeners
+	if ($results['data']['total_cities'] == 0){
+		set_err('No listeners found', $link);
+		return;
+	}
 	$results['error'] = 'None';
 
 	echo json_encode($results);
