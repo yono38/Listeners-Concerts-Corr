@@ -19,10 +19,21 @@
     </head>
     <body>
     <div id="container">
-            	<div id="loading"><h1>Loading data..</h1> <img src="img/loader.gif"></div>
+            	<div id="loading" class="trans"><h1>Loading data..</h1> <img src="img/loader.gif"></div>
+            	<div id="help_info">
+		         	<div id="help_text">
+		         		<p> I made this for my Data Visualization final project in Spring 2012. It visualizes correlations between listening rates and concert tours for musicians.</p>
+				      	<p>It uses a database with Last.fm data of the top 50 artists weekly in 46 US cities from 2009-2011.</p>
+				      	<p>On the map, overlays vary in size and color based on the number of listeners.</p>
+				      	<p>Markers are dynamically loaded using Last.fm's API (don't blame me if they're wrong!) and placed on cities automatically.</p>
+				      	<p>Enjoy! Send any feedback to <a href="mailto:yono38@gmail.com">yono38@gmail.com</a> </p>
+				      	<p><button id="close_help">Close</button></p>
+		         	</div>
+		         </div>
     	<header class="dark">
 			<div class="container_16">
-				<h1>Music Popularity and Events - Are They Correlated? - By Jason Schapiro</h1>
+				<h1>Music Popularity and Events - Are They Correlated? - By Jason Schapiro <button id="help">What's this?</button></h1>
+				
 			</div>
 		</header>
 		<div class="container_16">

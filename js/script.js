@@ -1,5 +1,8 @@
 
 $(document).ready(function(){
+	$('#help').click(function(){ $('#help_info').show(); });
+	$('#close_help').click(function(){ $('#help_info').hide();});
+
 	// set up empty map
 	$('#map_canvas').gmap({'center': '39.027719,-103.623047', 'disableDefaultUI':false, 'callback': function() {
 		var self = this;
@@ -83,7 +86,7 @@ $(document).ready(function(){
 						// hide erroneous geotags (failed :/ )
 					//	if (long < -90 && long > -115 && lat < 50 && lat > 25){
 							self.addMarker({ 'position': new google.maps.LatLng(lat, long), 'bounds':true } ).click(function() {
-								$('#info_box').html('<div style="text-align:center"><h2>Event: '+event.title+'</h2><h2>Location: '+event.venue.location.city+'</h2><h2>Date: '+event.startDate+'</h2></div>');
+								$('#info_box').html('<div style="text-align:center"><h2>Event: <a href="'+event.url+'" target="_blank">'+event.title+'</a></h2><h2>Location: '+event.venue.location.city+'</h2><h2>Date: '+event.startDate+'</h2></div>');
 							});
 					//	}
 					}
